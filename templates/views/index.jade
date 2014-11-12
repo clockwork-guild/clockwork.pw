@@ -1,0 +1,18 @@
+extends ../layouts/default
+
+block content
+	.container
+		.row
+			.col-lg-8
+				if data.posts.length
+					each post in data.posts
+						h2= post.title
+						p.lead= 'by ' + post.author.username + ' on ' + post.publishedDateFormatted
+						hr
+						p.lead
+							| !{post.content}
+						hr
+
+			.col-lg-4
+				.well
+					h4= 'Sidebar!'

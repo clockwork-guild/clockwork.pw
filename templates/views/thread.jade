@@ -1,0 +1,147 @@
+extends ../layouts/default
+
+block head
+    link(href="/js/lib/ckeditor/contents.css", rel="stylesheet")
+
+block content
+
+    //- We shove the existing content here so we can load it later if needed
+    script(id='submittedCommentText', type='text/html') !{submitted.commentText}
+
+    //- Delete thread modal - huge hack
+    #deleteThreadModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='deleteThreadModal', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal')
+                  span(aria-hidden='true') ×
+                  span.sr-only Close
+                h4#deleteThreadModal.modal-title Delete Thread?
+              .modal-footer
+                form(role='form', method='post')
+                    input(type='hidden', name=csrf_token_key, value=csrf_token_value)
+                    input(type='hidden', name='action', value='deleteThread')
+                    button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                    input.btn.btn-danger(type='submit')= "Delete"
+
+    //- Edit thread modal - huge hack
+    #editThreadModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='editThreadModal', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal')
+                  span(aria-hidden='true') ×
+                  span.sr-only Close
+                h4#editThreadModal.modal-title Edit Thread
+              .modal-body
+                form(role='form', method='post')
+                    input(type='hidden', name=csrf_token_key, value=csrf_token_value)
+                    input(type='hidden', name='action', value='editThread')
+
+                    .form-group
+                        textarea.ckeditor.form-control(id='editThreadText', name='editThreadText', rows='10')
+                    .form-group.modal-footer
+                        button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                        input.btn.btn-success(type='submit')= "Edit"
+
+    //- Delete comment modal - huge hack
+    #deleteCommentModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='deleteCommentModal', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal')
+                  span(aria-hidden='true') ×
+                  span.sr-only Close
+                h4#deleteCommentModal.modal-title Delete Comment?
+              .modal-footer
+                form(role='form', method='post')
+                    input(type='hidden', name=csrf_token_key, value=csrf_token_value)
+                    input(type='hidden', name='action', value='deleteComment')
+                    input(type='hidden', name='commentId')
+                    button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                    input.btn.btn-danger(type='submit')= "Delete"
+
+    //- Edit comment modal - huge hack
+    #editCommentModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='editCommentModal', aria-hidden='true')
+        .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(type='button', data-dismiss='modal')
+                  span(aria-hidden='true') ×
+                  span.sr-only Close
+                h4#editCommentModal.modal-title Edit Comment
+              .modal-body
+                form(role='form', method='post')
+                    input(type='hidden', name=csrf_token_key, value=csrf_token_value)
+                    input(type='hidden', name='action', value='editComment')
+                    input(type='hidden', name='commentId')
+
+                    .form-group
+                        textarea.ckeditor.form-control(id='editCommentText', name='editCommentText', rows='10')
+                    .form-group.modal-footer
+                        button.btn.btn-default(type='button', data-dismiss='modal') Cancel
+                        input.btn.btn-success(type='submit')= "Edit"
+
+    //- Thread content display
+    .container
+        .row
+            .col-lg-12
+                .h4= data.thread.title
+                .well.col-lg-12
+                    .col-lg-3.media
+                        a.pull-left
+                            img.media-object(data-src="holder.js/64x64" alt="64x64" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjZWVlIi8+PHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMzIiIHk9IjMyIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEycHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+NjR4NjQ8L3RleHQ+PC9zdmc+" style="width: 64px; height: 64px;")
+                        div #[span by #[b= data.thread.author.username] #[br] #[small on #[i= data.thread.publishedDateFormatted]]]
+
+                        if data.thread.author.id === user.id
+                            div
+                                button.btn.btn-link(type="button", id="editThread", data-slug=data.thread.slug)
+                                    span edit
+                                span /
+                                button.btn.btn-link(type="button", id="deleteThread", data-slug=data.thread.slug)
+                                    span delete
+                    #threadText.col-lg-9 !{data.thread.content}
+
+                //- Comments display
+                if data.comments.length
+                    each comment in data.comments
+                        .well.col-lg-12
+                            .col-lg-3.media
+                                a.pull-left
+                                    img.media-object(data-src="holder.js/64x64" alt="64x64" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjZWVlIi8+PHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMzIiIHk9IjMyIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEycHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+NjR4NjQ8L3RleHQ+PC9zdmc+" style="width: 64px; height: 64px;")
+                                div #[span by #[b= comment.author.username] #[br] #[small on #[i= comment.publishedDateFormatted]]]
+                                if comment.author.id === user.id
+                                    div
+                                        button.btn.btn-link.editComment(type="button", data-comment-id=comment.id)
+                                            span edit
+                                        span /
+                                        button.btn.btn-link.deleteComment(type="button", data-comment-id=comment.id)
+                                            span delete
+                            div(id=comment.id).col-lg-9 !{comment.content}
+
+        //- New comment form
+        .row
+            .col-lg-12
+                .well.col-lg-12
+                    .col-lg-3.media
+                        a.pull-left
+                            img.media-object(data-src="holder.js/64x64" alt="64x64" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjZWVlIi8+PHRleHQgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMzIiIHk9IjMyIiBzdHlsZT0iZmlsbDojYWFhO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1zaXplOjEycHg7Zm9udC1mYW1pbHk6QXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWY7ZG9taW5hbnQtYmFzZWxpbmU6Y2VudHJhbCI+NjR4NjQ8L3RleHQ+PC9zdmc+" style="width: 64px; height: 64px;")
+                        div #[span #[b= user.username]]
+
+                    .col-lg-9
+                        form(role='form', method='post')
+
+                            input(type='hidden', name=csrf_token_key, value=csrf_token_value)
+                            input(type='hidden', name='action', value='newComment')
+
+                            .form-group
+                                label(for='commentText') Comment
+                                textarea.ckeditor.form-control(id='commentText', name='commentText', rows='10')
+
+                            .form-group
+                                input.btn.btn-default(type='submit')= "Submit"
+
+block js
+    //- In the event that a comment fails to submit we can load the data back into the editor here
+    script(src='/js/lib/ckeditor/ckeditor.js')
+    script(src='/js/forums.js')

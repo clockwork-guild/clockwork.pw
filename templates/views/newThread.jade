@@ -1,0 +1,49 @@
+extends ../layouts/default
+
+block head
+    link(href="/js/lib/ckeditor/contents.css", rel="stylesheet")
+
+block content
+
+    //- We shove the existing content here so we can load it later
+    script(id='submittedThreadText', type='text/html') !{submitted.threadText}
+
+    .container
+        .row
+            .col-lg-8
+                h4= 'New Thread'
+                form(role='form', method='post')
+
+                    input(type='hidden', name=csrf_token_key, value=csrf_token_value)
+                    input(type='hidden', name='action', value='newThread')
+
+                    .form-group
+                        label(for='threadTitle') Title
+                        input.form-control(type='text' id='threadTitle' name='threadTitle', placeholder='Thread Title', value=submitted.threadTitle)
+
+                    .form-group
+                        label(for='threadText') Text
+                        textarea.ckeditor.form-control(id='threadText', name='threadText', rows='20')
+
+                    .form-group
+                        input.btn.btn-default(type='submit')= "Submit"
+
+            .col-lg-4
+                .well
+                    h4= 'Sidebar!'
+
+block js
+    //- We shove the existing content here so we can load it later
+    script(src='/js/lib/ckeditor/ckeditor.js')
+    script.
+        (function () {
+            try {
+                var editor = CKEDITOR.replace('threadText');
+                editor.on('instanceReady', function() {
+                    var data = $('#submittedThreadText').html();
+                    editor.setData(data);
+                });
+            } catch (e) {
+                console.log(e);
+            };
+        })();

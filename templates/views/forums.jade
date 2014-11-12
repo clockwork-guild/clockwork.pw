@@ -1,0 +1,87 @@
+extends ../layouts/default
+
+block content
+	.container
+		.row
+			.col-lg-8
+				a.btn.btn-default(role="button", href="forums/thread/new")
+					span.glyphicon.glyphicon-plus
+					|  New Thread
+
+				br
+				br
+
+				.panel.panel-success
+					.panel-heading= 'Stickies'
+
+					table.table
+						tr
+							th(style="width: 50%")
+								span= "Thread"
+							th(style="width: 10%")
+								span= "Comments"
+							th(style="width: 40%")
+								.text-right
+									span= "Last Comment"
+
+						if data.stickies.length
+							//- TODO make this a mixin - this is exactly the same as regular threads
+							if data.stickies.length
+								each thread in data.stickies
+									tr
+										td
+											a(href=thread.link)= thread.thread.title
+											br
+											small #[span by #[b= thread.thread.author.username] on #[i= thread.thread.publishedDateFormatted]]
+										td= thread.commentCount
+										if thread.lastComment
+											td.text-right
+												span= thread.lastComment.publishedDateFormatted
+												br
+												small #[span by #[b= thread.lastComment.author.username]]
+										else
+											td.text-right
+
+
+						else
+							tr
+								td
+									span= "No Stickies"
+
+
+				.panel.panel-default
+					.panel-heading= 'Threads'
+
+					table.table
+						tr
+							th(style="width: 50%")
+								span= "Thread"
+							th(style="width: 10%")
+								span= "Comments"
+							th(style="width: 40%")
+								.text-right
+									span= "Last Comment"
+
+
+							if data.threads.length
+								each thread in data.threads
+									tr
+										td
+											a(href=thread.link)= thread.thread.title
+											br
+											small #[span by #[b= thread.thread.author.username] on #[i= thread.thread.publishedDateFormatted]]
+										td= thread.commentCount
+										if thread.lastComment
+											td.text-right
+												span= thread.lastComment.publishedDateFormatted
+												br
+												small #[span by #[b= thread.lastComment.author.username]]
+										else
+											td.text-right
+							else
+								tr
+									td= "No Threads"
+
+			.col-lg-4
+				.well
+					h4= 'Sidebar!'

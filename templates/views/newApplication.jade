@@ -1,0 +1,43 @@
+extends ../layouts/default
+
+block head
+    link(href="/js/lib/ckeditor/contents.css", rel="stylesheet")
+
+block content
+
+    //- We shove the existing content here so we can load it later
+    script(id='submittedApplicationText', type='text/html') !{submitted.applicationText}
+    script(id='baseApplicationText', type='text/html') !{data.baseApplication.content}
+
+    .container
+        .row
+            .col-lg-12
+                h4= 'New Application'
+                form(role='form', method='post')
+
+                    input(type='hidden', name=csrf_token_key, value=csrf_token_value)
+                    input(type='hidden', name='action', value='newApplication')
+
+                    .form-group
+                        label(for='applicationText') Text
+                        textarea.ckeditor.form-control(id='applicationText', name='applicationText', rows='20')
+
+                    .form-group
+                        input.btn.btn-default(type='submit')= "Submit"
+
+block js
+    //- We shove the existing content here so we can load it later
+    script(src='/js/lib/ckeditor/ckeditor.js')
+    script.
+        (function () {
+            try {
+                var editor = CKEDITOR.replace('applicationText');
+                editor.on('instanceReady', function() {
+                    var submitted = $('#submittedThreadText').html();
+                    var base = $('#baseApplicationText').html();
+                    editor.setData(submitted ? submitted : base);
+                });
+            } catch (e) {
+                console.log(e);
+            };
+        })();

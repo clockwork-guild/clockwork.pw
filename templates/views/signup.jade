@@ -1,0 +1,30 @@
+extends ../layouts/default
+
+block intro
+
+	.container: .col-md-4
+		h1= 'Signup'
+
+block content
+
+	.container: .col-md-4
+		form(method="post", novalidate).auth-form
+			input(type='hidden', name=csrf_token_key, value=csrf_token_value)
+			input(type='hidden', name='action', value='signup')
+			.form-group
+				label(for='username') Username
+				input(type='username', name='username', id='username', value=submitted.username).form-control
+			.form-group
+				label(for='password') Password
+				input(type='password', name='password', id='password').form-control
+			button(type='submit').btn.btn-primary Sign Up
+		br
+		a(href='/login') Login Instead
+
+block js
+
+	//- Only focus the field after the shake animation is complete
+	if messages && messages.error.length
+		script setTimeout(function() { try { document.getElementById('username').focus(); } catch(e) {}; }, 800);
+	else
+		script try { document.getElementById('username').focus(); } catch(e) {};

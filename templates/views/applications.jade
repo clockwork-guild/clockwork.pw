@@ -1,0 +1,45 @@
+extends ../layouts/default
+
+block content
+	.container
+		.row
+			.col-lg-8
+				//- If the user has no applications and is not a member, give them a button to apply.
+				if !data.applications.length && !user.isMember
+					a.btn.btn-default(role="button", href="/applications/new")
+						span.glyphicon.glyphicon-plus
+						|  Apply Now
+
+					br
+					br
+
+				.panel.panel-default
+					.panel-heading= 'Applications'
+
+					table.table
+						tr
+							th(style="width: 50%")
+								span= "Applicant"
+							th(style="width: 50%")
+								.text-right
+									span= "Status"
+
+
+							if data.applications.length
+								each application in data.applications
+									tr
+										td
+											a(href='/applications/' + application.applicant.username)= application.applicant.username
+										td.text-right
+											if application.state === "in review"
+												span.label.label-info= "In Review"
+											else if application.state === "accepted"
+												span.label.label-success= "Accepted"
+											else if application.state === "denied"
+												span.label.label-danger= "Denied"
+											else
+												span.label.label-default= "Unknown"
+							else
+								tr
+									td= "No Applications"
+									td
